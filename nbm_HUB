@@ -1,0 +1,291 @@
+-- KRNL Script by Hacker
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- Создание GUI
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local OpenBtn = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "HackMenu"
+
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 300, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MainFrame.Visible = false
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+OpenBtn.Parent = ScreenGui
+OpenBtn.Size = UDim2.new(0, 100, 0, 40)
+OpenBtn.Position = UDim2.new(0, 10, 0, 10)
+OpenBtn.Text = "Open Menu"
+OpenBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- Переменные
+local speedEnabled = false
+local spinnerEnabled = false
+local teleportEnabled = false
+local flyEnabled = false
+local currentSpeed = 100
+local teleportTarget = ""
+
+-- Функция уведомления
+function notify(msg)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "KRNL Hack",
+        Text = msg,
+        Duration = 5
+    })
+end
+
+-- Создание элементов меню
+local function createMenu()
+    -- Заголовок
+    local title = Instance.new("TextLabel")
+    title.Parent = MainFrame
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Text = "KRNL HACK MENU"
+    title.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Кнопка Speed
+    local speedBtn = Instance.new("TextButton")
+    speedBtn.Parent = MainFrame
+    speedBtn.Size = UDim2.new(0.45, 0, 0, 30)
+    speedBtn.Position = UDim2.new(0.025, 0, 0.1, 0)
+    speedBtn.Text = "Speed: OFF"
+    speedBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    speedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Слайдер скорости
+    local speedBox = Instance.new("TextBox")
+    speedBox.Parent = MainFrame
+    speedBox.Size = UDim2.new(0.45, 0, 0, 30)
+    speedBox.Position = UDim2.new(0.525, 0, 0.1, 0)
+    speedBox.Text = "100"
+    speedBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    speedBox.PlaceholderText = "0-750"
+    
+    -- Кнопка Spinner
+    local spinnerBtn = Instance.new("TextButton")
+    spinnerBtn.Parent = MainFrame
+    spinnerBtn.Size = UDim2.new(0.95, 0, 0, 30)
+    spinnerBtn.Position = UDim2.new(0.025, 0, 0.2, 0)
+    spinnerBtn.Text = "Spinner: OFF"
+    spinnerBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    spinnerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Кнопка Crash Server
+    local crashBtn = Instance.new("TextButton")
+    crashBtn.Parent = MainFrame
+    crashBtn.Size = UDim2.new(0.95, 0, 0, 30)
+    crashBtn.Position = UDim2.new(0.025, 0, 0.3, 0)
+    crashBtn.Text = "CRASH SERVER"
+    crashBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    crashBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Кнопка Teleporter
+    local teleportBtn = Instance.new("TextButton")
+    teleportBtn.Parent = MainFrame
+    teleportBtn.Size = UDim2.new(0.45, 0, 0, 30)
+    teleportBtn.Position = UDim2.new(0.025, 0, 0.4, 0)
+    teleportBtn.Text = "Teleporter"
+    teleportBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Поле для ника телепорта
+    local teleportBox = Instance.new("TextBox")
+    teleportBox.Parent = MainFrame
+    teleportBox.Size = UDim2.new(0.45, 0, 0, 30)
+    teleportBox.Position = UDim2.new(0.525, 0, 0.4, 0)
+    teleportBox.Text = ""
+    teleportBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    teleportBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    teleportBox.PlaceholderText = "Player Name"
+    
+    -- Кнопка Teleport Toggle
+    local teleportToggle = Instance.new("TextButton")
+    teleportToggle.Parent = MainFrame
+    teleportToggle.Size = UDim2.new(0.95, 0, 0, 30)
+    teleportToggle.Position = UDim2.new(0.025, 0, 0.5, 0)
+    teleportToggle.Text = "Teleport: OFF"
+    teleportToggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    teleportToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Кнопка Fly
+    local flyBtn = Instance.new("TextButton")
+    flyBtn.Parent = MainFrame
+    flyBtn.Size = UDim2.new(0.95, 0, 0, 30)
+    flyBtn.Position = UDim2.new(0.025, 0, 0.6, 0)
+    flyBtn.Text = "Fly: OFF"
+    flyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    flyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Закрыть меню
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Parent = MainFrame
+    closeBtn.Size = UDim2.new(0.95, 0, 0, 30)
+    closeBtn.Position = UDim2.new(0.025, 0, 0.9, 0)
+    closeBtn.Text = "Close Menu"
+    closeBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    -- Функционал кнопок
+    speedBtn.MouseButton1Click:Connect(function()
+        speedEnabled = not speedEnabled
+        if speedEnabled then
+            speedBtn.Text = "Speed: ON"
+            speedBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            currentSpeed = tonumber(speedBox.Text) or 100
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = currentSpeed
+            end
+            notify("Speed hack ON: " .. currentSpeed)
+        else
+            speedBtn.Text = "Speed: OFF"
+            speedBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = 16
+            end
+            notify("Speed hack OFF")
+        end
+    end)
+    
+    speedBox.FocusLost:Connect(function()
+        local newSpeed = tonumber(speedBox.Text)
+        if newSpeed and newSpeed >= 0 and newSpeed <= 750 then
+            currentSpeed = newSpeed
+            if speedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = currentSpeed
+            end
+        else
+            speedBox.Text = tostring(currentSpeed)
+        end
+    end)
+    
+    spinnerBtn.MouseButton1Click:Connect(function()
+        spinnerEnabled = not spinnerEnabled
+        if spinnerEnabled then
+            spinnerBtn.Text = "Spinner: ON"
+            spinnerBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            notify("Spinner ON")
+            
+            -- Кручение игрока
+            while spinnerEnabled and LocalPlayer.Character do
+                wait()
+                local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(50), 0)
+                end
+            end
+        else
+            spinnerBtn.Text = "Spinner: OFF"
+            spinnerBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            notify("Spinner OFF")
+        end
+    end)
+    
+    crashBtn.MouseButton1Click:Connect(function()
+        notify("Crashing server...")
+        -- Метод краша через спам объектов
+        for i = 1, 1000 do
+            local part = Instance.new("Part")
+            part.Parent = workspace
+            part.Size = Vector3.new(100, 100, 100)
+            part.Position = Vector3.new(0, 1000, 0)
+            part.Anchored = true
+        end
+        -- Дополнительный метод
+        while true do
+            game:GetService("ReplicatedStorage"):ClearAllChildren()
+            wait(0.1)
+        end
+    end)
+    
+    teleportBtn.MouseButton1Click:Connect(function()
+        local targetName = teleportBox.Text
+        if targetName ~= "" then
+            teleportTarget = targetName
+            notify("Target set: " .. targetName)
+        end
+    end)
+    
+    teleportToggle.MouseButton1Click:Connect(function()
+        teleportEnabled = not teleportEnabled
+        if teleportEnabled then
+            teleportToggle.Text = "Teleport: ON"
+            teleportToggle.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            notify("Auto-teleport ON")
+            
+            -- Авто-телепорт к цели
+            while teleportEnabled do
+                wait(1)
+                if teleportTarget ~= "" then
+                    local target = Players:FindFirstChild(teleportTarget)
+                    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character:MoveTo(target.Character.HumanoidRootPart.Position)
+                    end
+                end
+            end
+        else
+            teleportToggle.Text = "Teleport: OFF"
+            teleportToggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            notify("Auto-teleport OFF")
+        end
+    end)
+    
+    flyBtn.MouseButton1Click:Connect(function()
+        flyEnabled = not flyEnabled
+        if flyEnabled then
+            flyBtn.Text = "Fly: ON"
+            flyBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            notify("Fly ON - Use Space/W/S/A/D")
+            
+            -- Система полета
+            local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
+            bodyVelocity.MaxForce = Vector3.new(40000, 40000, 40000)
+            
+            UserInputService.InputBegan:Connect(function(input)
+                if flyEnabled then
+                    if input.KeyCode == Enum.KeyCode.Space then
+                        bodyVelocity.Velocity = Vector3.new(0, 50, 0)
+                    elseif input.KeyCode == Enum.KeyCode.W then
+                        bodyVelocity.Velocity = LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * 50
+                    elseif input.KeyCode == Enum.KeyCode.S then
+                        bodyVelocity.Velocity = -LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * 50
+                    end
+                end
+            end)
+        else
+            flyBtn.Text = "Fly: OFF"
+            flyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            notify("Fly OFF")
+            if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
+                LocalPlayer.Character.HumanoidRootPart.BodyVelocity:Destroy()
+            end
+        end
+    end)
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        MainFrame.Visible = false
+        OpenBtn.Visible = true
+    end)
+end
+
+-- Открытие меню
+OpenBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    OpenBtn.Visible = false
+end)
+
+-- Создание меню
+createMenu()
+notify("KRNL Hack Menu loaded!")
